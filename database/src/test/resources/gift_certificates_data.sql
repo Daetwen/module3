@@ -1,0 +1,3 @@
+INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date) VALUES ('1', 'Certificate1', 'hello', '5000', '50', '2021-11-20T21:30:19+03:00', '2021-11-20T21:30:19+03:00');
+INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date) VALUES ('2', 'Certificate2', 'hello world', '6000', '60', '2021-11-20T21:30:19+03:00', '2021-11-20T21:30:19+03:00');
+INSERT INTO gift_certificates (id, name, description, price, duration, create_date, last_update_date) VALUES ('3', 'Certificate3', 'hello someone', '7000', '70', '2021-11-20T21:30:19+03:00', '2021-11-20T21:30:19+03:00');
