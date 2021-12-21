@@ -1,5 +1,7 @@
 package com.epam.esm.entity;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Audited
 @Table(name = "gift_certificates")
 public class Certificate {
 

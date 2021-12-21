@@ -1,10 +1,13 @@
 package com.epam.esm.entity;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
+@Audited
 @Table(name = "orders")
 public class Order {
 

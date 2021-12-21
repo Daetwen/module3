@@ -1,10 +1,13 @@
 package com.epam.esm.entity;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Audited
 @Table(name = "tags")
 public class Tag {
 
