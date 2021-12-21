@@ -36,12 +36,12 @@ public class TagServiceImpl implements TagService {
 
     @Override
     @Transactional
-    public int create(TagDto tagDto) {
-        int countOfCreation = 0;
+    public TagDto create(TagDto tagDto) throws ServiceSearchException {
+        Tag createdTag = null;
         if (validator.isValidTag(tagDto)) {
-            countOfCreation = tagDao.create(tagConverter.convertTagDtoToTag(tagDto));
+            createdTag = tagDao.create(tagConverter.convertTagDtoToTag(tagDto));
         }
-        return countOfCreation;
+        return checkTag(createdTag);
     }
 
     @Override
@@ -64,26 +64,32 @@ public class TagServiceImpl implements TagService {
             throws ServiceValidationException {
         validator.validatePage(page);
         validator.validatePage(pageSize);
-        int countOfPages = getCountOfPages(pageSize);
         List<TagDto> tagDtoList = new ArrayList<>();
-        if (Integer.parseInt(page) <= countOfPages) {
+        if (Integer.parseInt(page) <= getCountOfPages(pageSize)) {
             for (Tag element : tagDao.findAll(Integer.parseInt(page), Integer.parseInt(pageSize))) {
-                tagDtoList.add(tagConverter.convertTagToTegDto(element));
+                tagDtoList.add(tagConverter.convertTagToTagDto(element));
             }
         }
         return tagDtoList;
     }
 
     @Override
+    public TagDto findMostPopular() throws ServiceSearchException {
+        Tag result = tagDao.findMostPopular();
+        return checkTag(result);
+    }
+
+    @Override
     @Transactional
-    public int deleteById(String id) throws ServiceValidationException {
+    public TagDto deleteById(String id) throws ServiceValidationException, ServiceSearchException {
         validator.validateId(id);
-        return tagDao.deleteById(Long.parseLong(id));
+        Tag result = tagDao.deleteById(Long.parseLong(id));
+        return checkTag(result);
     }
 
     private TagDto checkTag(Tag tag) throws ServiceSearchException {
         if (tag != null) {
-            return tagConverter.convertTagToTegDto(tag);
+            return tagConverter.convertTagToTagDto(tag);
         } else {
             throw new ServiceSearchException(
                     localeManager.getLocalizedMessage(LanguagePath.ERROR_NOT_FOUND));

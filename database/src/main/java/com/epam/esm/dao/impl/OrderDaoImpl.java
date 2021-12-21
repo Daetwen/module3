@@ -18,6 +18,7 @@ import java.util.List;
 public class OrderDaoImpl implements OrderDao {
 
     private static final String ID_PARAMETER = "id";
+    private static final String JOIN_TABLE_ORDERS = "orders";
     private final EntityManager entityManager;
 
     @Autowired
@@ -26,10 +27,10 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public int create(Order order) {
+    public Order create(Order order) {
         entityManager.persist(order);
         entityManager.flush();
-        return 1;
+        return order;
     }
 
     @Override
@@ -63,7 +64,7 @@ public class OrderDaoImpl implements OrderDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        Join<User, Order> orders = rootEntry.join("orders");
+        Join<User, Order> orders = rootEntry.join(JOIN_TABLE_ORDERS);
         CriteriaQuery<Order> byUserId = criteriaQuery
                 .select(orders)
                 .where(criteriaBuilder.equal(rootEntry.get(ID_PARAMETER), userId));
@@ -79,7 +80,7 @@ public class OrderDaoImpl implements OrderDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        Join<User, Order> orders = rootEntry.join("orders");
+        Join<User, Order> orders = rootEntry.join(JOIN_TABLE_ORDERS);
         CriteriaQuery<Order> byUserId = criteriaQuery
                 .select(orders)
                 .where(criteriaBuilder.equal(rootEntry.get(ID_PARAMETER), userId));

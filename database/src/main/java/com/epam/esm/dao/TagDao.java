@@ -13,9 +13,9 @@ public interface TagDao {
      * Create one tag.
      *
      * @param tag the tag to create
-     * @return the int number of created elements
+     * @return the created tag
      */
-    int create(Tag tag);
+    Tag create(Tag tag);
 
     /**
      * Find by id one tag.
@@ -34,27 +34,42 @@ public interface TagDao {
     Tag findByName(String name);
 
     /**
+     * Find tags by certificate id.
+     *
+     * @param certificateId the certificate id
+     * @return the page of all tags for certificate
+     */
+    List<Tag> findByCertificateId(Long certificateId);
+
+    /**
      * Find all tags.
      *
      * @param page     the current page
      * @param pageSize the page size
-     * @return the list of all tags in the database
+     * @return the page of all tags in the database
      */
     List<Tag> findAll(Integer page, Integer pageSize);
 
     /**
-     * Delete tags by id.
+     * Find most popular tag by count of use and price of certificates.
+     *
+     * @return the most popular tag
+     */
+    Tag findMostPopular();
+
+    /**
+     * Delete tag by id.
      *
      * @param id the tag id
-     * @return number of tags removed
+     * @return the deleted tag
      */
-    int deleteById(Long id);
+    Tag deleteById(Long id);
 
 
     /**
      * Find count of tag records.
      *
-     * @return the int number of records
+     * @return the int number of tag records
      */
     int findCountOfRecords();
 }

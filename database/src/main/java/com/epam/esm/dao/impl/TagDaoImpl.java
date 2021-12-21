@@ -7,15 +7,33 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
 public class TagDaoImpl implements TagDao {
 
     private static final String NAME_PARAMETER = "name";
+
+    private static final String FIND_TAGS_BY_CERTIFICATE_ID =
+            "SELECT tag_id, tags.name FROM tags " +
+                    "JOIN gift_certificates_has_tags ON tags_id = tag_id " +
+                    "JOIN gift_certificates ON gift_certificates_id = certificate_id " +
+                    "WHERE certificate_id= ?1 ";
+
+    private static final String FIND_MOST_POPULAR_TAGS =
+            "SELECT tag_id, tags.name FROM tags " +
+                    "JOIN gift_certificates_has_tags ON gift_certificates_has_tags.tags_id = tag_id " +
+                    "JOIN gift_certificates ON gift_certificates.certificate_id = gift_certificates_id " +
+                    "GROUP BY tag_id " +
+                    "HAVING COUNT(gift_certificates_has_tags.tags_id) = " +
+                    "(SELECT COUNT(gift_certificates_has_tags.tags_id) AS count FROM tags " +
+                    "JOIN gift_certificates_has_tags ON gift_certificates_has_tags.tags_id = tag_id " +
+                    "GROUP BY tag_id " +
+                    "ORDER BY count DESC " +
+                    "LIMIT 1) " +
+                    "ORDER BY SUM(gift_certificates.price) DESC " +
+                    "LIMIT 1";
     private final EntityManager entityManager;
 
     @Autowired
@@ -24,14 +42,12 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public int create(Tag tag) {
-        int count = 0;
+    public Tag create(Tag tag) {
         if (findByName(tag.getName()) == null) {
             entityManager.persist(tag);
             entityManager.flush();
-            count = 1;
         }
-        return count;
+        return findByName(tag.getName());
     }
 
     @Override
@@ -55,6 +71,12 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
+    public List<Tag> findByCertificateId(Long certificateId) {
+        return  entityManager.createNativeQuery(
+                FIND_TAGS_BY_CERTIFICATE_ID, Tag.class).setParameter(1, certificateId).getResultList();
+    }
+
+    @Override
     public List<Tag> findAll(Integer page, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
@@ -68,15 +90,18 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
-    public int deleteById(Long id) {
-        int count = 0;
+    public Tag findMostPopular() {
+        return (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAGS, Tag.class).getSingleResult();
+    }
+
+    @Override
+    public Tag deleteById(Long id) {
         Tag tag = entityManager.find(Tag.class, id);
         if(tag != null) {
             entityManager.remove(tag);
             entityManager.flush();
-            count = 1;
         }
-        return count;
+        return tag;
     }
 
     @Override

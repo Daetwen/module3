@@ -11,7 +11,7 @@ public class CertificateDto {
     private String name;
     private String description;
     private BigDecimal price;
-    private int duration;
+    private Integer duration;
     private OffsetDateTime createDate;
     private OffsetDateTime lastUpdateDate;
     private List<TagDto> tags;
@@ -74,11 +74,11 @@ public class CertificateDto {
         this.price = price;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
@@ -131,7 +131,7 @@ public class CertificateDto {
                 && name.equals(that.name)
                 && Objects.equals(description, that.description)
                 && price.equals(that.price)
-                && duration == that.duration
+                && duration.equals(that.duration)
                 && createDate.equals(that.createDate)
                 && lastUpdateDate.equals(that.lastUpdateDate)
                 && tags != null ? tags.equals(that.tags) : that.tags == null;
@@ -146,7 +146,7 @@ public class CertificateDto {
         result = result * prime + (name != null ? name.hashCode() : 0);
         result = result * prime + (description != null ? description.hashCode() : 0);
         result = result * prime + (price != null ? price.hashCode() : 0);
-        result = result * prime + duration;
+        result = result * prime + (duration != null ? duration.hashCode() : 0);
         result = result * prime + (createDate != null ? createDate.hashCode() : 0);
         result = result * prime + (lastUpdateDate != null ? lastUpdateDate.hashCode() : 0);
         result = result * prime + (tags != null ? tags.hashCode() : 0);

@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserDao {
 
     /**
-     * Find by id user.
+     * Find by user id.
      *
      * @param id the id for search
      * @return the result of search
@@ -22,14 +22,14 @@ public interface UserDao {
      *
      * @param page     the current page
      * @param pageSize the page size
-     * @return the list
+     * @return the page of all users in the database
      */
     List<User> findAll(Integer page, Integer pageSize);
 
     /**
      * Find count of user records.
      *
-     * @return the int number of records
+     * @return the int number of user records
      */
     int findCountOfRecords();
 }

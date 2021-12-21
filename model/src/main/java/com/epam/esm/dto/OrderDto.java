@@ -21,14 +21,6 @@ public class OrderDto {
         this.certificate = certificate;
     }
 
-    public OrderDto(OrderDto orderDto) {
-        this.id = orderDto.getId();
-        this.price = orderDto.getPrice();
-        this.createDate = orderDto.getCreateDate();
-        this.user = orderDto.getUser();
-        this.certificate = orderDto.getCertificate();
-    }
-
     public Long getId() {
         return id;
     }

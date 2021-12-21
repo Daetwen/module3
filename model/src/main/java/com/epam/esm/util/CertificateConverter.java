@@ -6,6 +6,9 @@ import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.Certificate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class CertificateConverter {
 

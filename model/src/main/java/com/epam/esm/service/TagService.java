@@ -15,9 +15,10 @@ public interface TagService {
      * Create one tag.
      *
      * @param tagDto the tag dto for creating
-     * @return he int number of created elements
+     * @return the created tag dto
+     * @throws ServiceSearchException the service search exception
      */
-    int create(TagDto tagDto);
+    TagDto create(TagDto tagDto) throws ServiceSearchException;
 
     /**
      * Find by id one tag dto.
@@ -41,19 +42,29 @@ public interface TagService {
 
     /**
      * Find all tags.
+     *
      * @param page     the page
      * @param pageSize the page size
-     * @return the list of all tags in the database
+     * @return the list of all tags
      * @throws ServiceValidationException the service validation exception
      */
     List<TagDto> findAll(String page, String pageSize) throws ServiceValidationException;
 
     /**
+     * Find most popular tag by count and price of certificates.
+     *
+     * @return the tag dto
+     * @throws ServiceSearchException the service search exception
+     */
+    TagDto findMostPopular() throws ServiceSearchException;
+
+    /**
      * Delete tag by id.
      *
      * @param id the tag id
-     * @return number of tags removed
+     * @return the deleted tag dto
      * @throws ServiceValidationException the service validation exception
+     * @throws ServiceSearchException     the service search exception
      */
-    int deleteById(String id) throws ServiceValidationException;
+    TagDto deleteById(String id) throws ServiceValidationException, ServiceSearchException;
 }

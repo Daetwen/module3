@@ -46,9 +46,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public int create(String userId, String certificateId)
-            throws ServiceValidationException {
-        int countOfCreation = 0;
+    public OrderDto create(String userId, String certificateId)
+            throws ServiceValidationException, ServiceSearchException {
+        Order order = null;
         validator.validateId(userId);
         validator.validateId(certificateId);
         if (validator.isUserExist(Long.parseLong(userId))
@@ -59,9 +59,9 @@ public class OrderServiceImpl implements OrderService {
             orderDto.setCertificate(certificateConverter.convertCertificateToCertificateDto(
                             certificateDao.findById(Long.parseLong(certificateId))));
             orderDto.setPrice(certificateDao.findById(Long.parseLong(certificateId)).getPrice());
-            countOfCreation = orderDao.create(orderConverter.convertOrderDtoToOrder(orderDto));
+            order = orderDao.create(orderConverter.convertOrderDtoToOrder(orderDto));
         }
-        return countOfCreation;
+        return checkOrder(order);
     }
 
     @Override
@@ -76,9 +76,8 @@ public class OrderServiceImpl implements OrderService {
             throws ServiceValidationException {
         validator.validatePage(page);
         validator.validatePage(pageSize);
-        int countOfPages = getCountOfPages(pageSize);
         List<OrderDto> orderDtoList = new ArrayList<>();
-        if (Integer.parseInt(page) <= countOfPages) {
+        if (Integer.parseInt(page) <= getCountOfPages(pageSize)) {
             for (Order element : orderDao.findAll(Integer.parseInt(page), Integer.parseInt(pageSize))) {
                 orderDtoList.add(orderConverter.convertOrderToOrderDto(element));
             }
@@ -92,9 +91,8 @@ public class OrderServiceImpl implements OrderService {
         validator.validateId(userId);
         validator.validatePage(page);
         validator.validatePage(pageSize);
-        int countOfPages = getCountOfPagesOfUserOrders(userId, pageSize);
         List<OrderDto> orderDtoList = new ArrayList<>();
-        if (Integer.parseInt(page) <= countOfPages) {
+        if (Integer.parseInt(page) <= getCountOfPagesOfUserOrders(userId, pageSize)) {
             List<Order> resultOrders = orderDao.findByUserId(
                     Long.parseLong(userId),
                     Integer.parseInt(page),

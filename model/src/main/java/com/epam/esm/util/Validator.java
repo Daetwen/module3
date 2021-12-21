@@ -48,6 +48,14 @@ public class Validator {
         }
     }
 
+    public boolean isValidId(Long id) {
+        boolean result = false;
+        if (id != null && id >= 1L) {
+            result = true;
+        }
+        return result;
+    }
+
     public boolean isValidName(String name) {
         return StringUtils.isNotBlank(name) && name.matches(NAME_REGEX);
     }
@@ -61,7 +69,7 @@ public class Validator {
         return price.compareTo(BigDecimal.ZERO) >= 0;
     }
 
-    public boolean isValidPositiveNumber(int duration) {
+    public boolean isValidDuration(int duration) {
         return duration >= 0;
     }
 
@@ -69,14 +77,15 @@ public class Validator {
         return isValidName(certificateDto.getName()) &&
                 isValidDescription(certificateDto.getDescription()) &&
                 isValidPrice(certificateDto.getPrice()) &&
-                isValidPositiveNumber(certificateDto.getDuration());
+                isValidDuration(certificateDto.getDuration());
     }
 
     public boolean isValidCertificateDto(CertificateDto certificateDto) {
-        return (certificateDto.getName() == null || isValidName(certificateDto.getName())) &&
+        return isValidId(certificateDto.getId()) &&
+                (certificateDto.getName() == null || isValidName(certificateDto.getName())) &&
                 isValidDescription(certificateDto.getDescription()) &&
                 (certificateDto.getPrice() == null || isValidPrice(certificateDto.getPrice())) &&
-                isValidPositiveNumber(certificateDto.getDuration());
+                (certificateDto.getDuration() == null || isValidDuration(certificateDto.getDuration()));
     }
 
     public boolean isValidTag(TagDto tagDto) {

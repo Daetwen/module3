@@ -3,7 +3,6 @@ package com.epam.esm.entity;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "orders")
@@ -14,10 +13,10 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", nullable = false)
     private OffsetDateTime createDate;
 
     @ManyToOne(fetch = FetchType.EAGER, targetEntity=User.class)

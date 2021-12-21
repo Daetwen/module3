@@ -13,10 +13,10 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", length = 45, nullable = false)
     private String name;
 
-    @Column(name = "surname")
+    @Column(name = "surname", length = 45, nullable = false)
     private String surname;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

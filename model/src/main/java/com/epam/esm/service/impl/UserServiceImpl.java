@@ -44,9 +44,8 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAll(String page, String pageSize) throws ServiceValidationException {
         validator.validatePage(page);
         validator.validatePage(pageSize);
-        int countOfPages = getCountOfPages(pageSize);
         List<UserDto> userDtoList = new ArrayList<>();
-        if (Integer.parseInt(page) <= countOfPages) {
+        if (Integer.parseInt(page) <= getCountOfPages(pageSize)) {
             for (User element : userDao.findAll(Integer.parseInt(page), Integer.parseInt(pageSize))) {
                 userDtoList.add(userConverter.convertUserToUserDto(element));
             }

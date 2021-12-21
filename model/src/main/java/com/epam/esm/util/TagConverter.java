@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TagConverter {
 
-    public TagDto convertTagToTegDto(Tag tag) {
+    public TagDto convertTagToTagDto(Tag tag) {
         TagDtoBuilder tagDtoBuilder = new TagDtoBuilder();
         tagDtoBuilder.setId(tag.getId());
         tagDtoBuilder.setName(tag.getName());

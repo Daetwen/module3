@@ -26,7 +26,7 @@ public interface UserService {
      *
      * @param page     the page
      * @param pageSize the page size
-     * @return the list
+     * @return the list of all users
      * @throws ServiceValidationException the service validation exception
      */
     List<UserDto> findAll(String page, String pageSize) throws ServiceValidationException;

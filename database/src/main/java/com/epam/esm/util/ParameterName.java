@@ -1,4 +1,4 @@
-package com.epam.esm.constant;
+package com.epam.esm.util;
 
 public enum ParameterName {
 

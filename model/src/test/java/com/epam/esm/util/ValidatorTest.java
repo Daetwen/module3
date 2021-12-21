@@ -39,9 +39,8 @@ public class ValidatorTest {
 
     @Test
     public void ValidateIdTestFalse3() {
-        String id = null;
         assertThrows(ServiceValidationException.class,
-                () -> validator.validateId(id));
+                () -> validator.validateId((String) null));
     }
 
     @Test
@@ -66,31 +65,102 @@ public class ValidatorTest {
     }
 
     @Test
-    public void ValidateINameTestFalse1() {
+    public void validatePageTestFalse1() {
+        String page = "1231231444444322343242324979876767687687687686768768768768767686876876876868768768";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void validatePageTestFalse2() {
+        String page = "1t23fge12";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void validatePageTestFalse3() {
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(null));
+    }
+
+    @Test
+    public void validatePageTestFalse4() {
+        String page = "";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void validatePageTestFalse5() {
+        String page = "   ";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void validatePageTestFalse6() {
+        String page = "-5";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void validatePageTestFalse7() {
+        String page = "0";
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validatePage(page));
+    }
+
+    @Test
+    public void ValidateNameTestFalse1() {
         String name = "";
         assertThrows(ServiceValidationException.class,
                 () -> validator.validateName(name));
     }
 
     @Test
-    public void ValidateINameTestFalse2() {
+    public void ValidateNameTestFalse2() {
         String name = "   ";
         assertThrows(ServiceValidationException.class,
                 () -> validator.validateName(name));
     }
 
     @Test
-    public void ValidateINameTestFalse3() {
-        String name = null;
+    public void ValidateNameTestFalse3() {
+        assertThrows(ServiceValidationException.class,
+                () -> validator.validateName(null));
+    }
+
+    @Test
+    public void ValidateNameTestFalse4() {
+        String name = "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
         assertThrows(ServiceValidationException.class,
                 () -> validator.validateName(name));
     }
 
     @Test
-    public void ValidateINameTestFalse4() {
-        String name = "gggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg";
-        assertThrows(ServiceValidationException.class,
-                () -> validator.validateName(name));
+    public void isValidIdTestTrue1() {
+        boolean actual = validator.isValidId(1L);
+        assertTrue(actual);
+    }
+
+    @Test
+    public void isValidIdTestFalse1() {
+        boolean actual = validator.isValidId(0L);
+        assertFalse(actual);
+    }
+
+    @Test
+    public void isValidIdTestFalse2() {
+        boolean actual = validator.isValidId(-1L);
+        assertFalse(actual);
+    }
+
+    @Test
+    public void isValidIdTestFalse3() {
+        boolean actual = validator.isValidId(null);
+        assertFalse(actual);
     }
 
     @Test
@@ -207,28 +277,28 @@ public class ValidatorTest {
     @Test
     public void isValidDurationTestTrue1() {
         int duration = 50;
-        boolean actual = validator.isValidPositiveNumber(duration);
+        boolean actual = validator.isValidDuration(duration);
         assertTrue(actual);
     }
 
     @Test
     public void isValidDurationTestTrue2() {
         int duration = 2147483647;
-        boolean actual = validator.isValidPositiveNumber(duration);
+        boolean actual = validator.isValidDuration(duration);
         assertTrue(actual);
     }
 
     @Test
     public void isValidDurationTestTrue3() {
         int duration = 0;
-        boolean actual = validator.isValidPositiveNumber(duration);
+        boolean actual = validator.isValidDuration(duration);
         assertTrue(actual);
     }
 
     @Test
     public void isValidDurationTestFalse1() {
         int duration = -1;
-        boolean actual = validator.isValidPositiveNumber(duration);
+        boolean actual = validator.isValidDuration(duration);
         assertFalse(actual);
     }
 }
