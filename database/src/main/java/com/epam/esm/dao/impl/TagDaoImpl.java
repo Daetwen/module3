@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,27 +14,17 @@ import java.util.List;
 @Repository
 public class TagDaoImpl implements TagDao {
 
+    private static final String ID_PARAMETER = "id";
     private static final String NAME_PARAMETER = "name";
-
-    private static final String FIND_TAGS_BY_CERTIFICATE_ID =
-            "SELECT tag_id, tags.name FROM tags " +
-                    "JOIN gift_certificates_has_tags ON tags_id = tag_id " +
-                    "JOIN gift_certificates ON gift_certificates_id = certificate_id " +
-                    "WHERE certificate_id= ?1 ";
+    private static final String JOIN_TABLE_TAGS = "tags";
 
     private static final String FIND_MOST_POPULAR_TAGS =
             "SELECT tag_id, tags.name FROM tags " +
-                    "JOIN gift_certificates_has_tags ON gift_certificates_has_tags.tags_id = tag_id " +
-                    "JOIN gift_certificates ON gift_certificates.certificate_id = gift_certificates_id " +
-                    "GROUP BY tag_id " +
-                    "HAVING COUNT(gift_certificates_has_tags.tags_id) = " +
-                    "(SELECT COUNT(gift_certificates_has_tags.tags_id) AS count FROM tags " +
-                    "JOIN gift_certificates_has_tags ON gift_certificates_has_tags.tags_id = tag_id " +
-                    "GROUP BY tag_id " +
-                    "ORDER BY count DESC " +
-                    "LIMIT 1) " +
-                    "ORDER BY SUM(gift_certificates.price) DESC " +
-                    "LIMIT 1";
+            "JOIN gift_certificates_has_tags ON tags_id = tag_id " +
+            "JOIN gift_certificates ON gift_certificates_id = certificate_id " +
+            "GROUP BY tag_id " +
+            "ORDER BY COUNT(tags_id) DESC, SUM(price) DESC " +
+            "LIMIT 1";
     private final EntityManager entityManager;
 
     @Autowired
@@ -72,8 +63,15 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> findByCertificateId(Long certificateId) {
-        return  entityManager.createNativeQuery(
-                FIND_TAGS_BY_CERTIFICATE_ID, Tag.class).setParameter(1, certificateId).getResultList();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Certificate> rootEntry = criteriaQuery.from(Certificate.class);
+        Join<Certificate, Tag> tags = rootEntry.join(JOIN_TABLE_TAGS);
+        CriteriaQuery<Tag> byCertificateId = criteriaQuery
+                .select(tags)
+                .where(criteriaBuilder.equal(rootEntry.get(ID_PARAMETER), certificateId));
+        TypedQuery<Tag> resultQuery = entityManager.createQuery(byCertificateId);
+        return resultQuery.getResultList();
     }
 
     @Override
