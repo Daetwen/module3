@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Repository
 public class TagDaoImpl implements TagDao {
@@ -18,13 +19,6 @@ public class TagDaoImpl implements TagDao {
     private static final String NAME_PARAMETER = "name";
     private static final String JOIN_TABLE_TAGS = "tags";
 
-    private static final String FIND_MOST_POPULAR_TAGS =
-            "SELECT tag_id, tags.name FROM tags " +
-            "JOIN gift_certificates_has_tags ON tags_id = tag_id " +
-            "JOIN gift_certificates ON gift_certificates_id = certificate_id " +
-            "GROUP BY tag_id " +
-            "ORDER BY COUNT(tags_id) DESC, SUM(price) DESC " +
-            "LIMIT 1";
     private final EntityManager entityManager;
 
     @Autowired
@@ -89,7 +83,13 @@ public class TagDaoImpl implements TagDao {
 
     @Override
     public Tag findMostPopular() {
-        return (Tag) entityManager.createNativeQuery(FIND_MOST_POPULAR_TAGS, Tag.class).getSingleResult();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> rootEntry = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(rootEntry).distinct(true);
+        List<Tag> tags = entityManager.createQuery(criteriaQuery).getResultList();
+        tags = selectMostPopularByCount(getTagCount(tags, criteriaBuilder));
+        return selectMostPopularByPrice(getTagPrice(tags, criteriaBuilder));
     }
 
     @Override
@@ -108,5 +108,72 @@ public class TagDaoImpl implements TagDao {
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         criteriaQuery.select(criteriaQuery.from(Tag.class));
         return entityManager.createQuery(criteriaQuery).getResultList().size();
+    }
+
+    private Map<Tag, Integer> getTagCount(List<Tag> uniqueTags, CriteriaBuilder criteriaBuilder) {
+        Map<Tag, Integer> countsOfUse = new HashMap<>();
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> rootEntry = criteriaQuery.from(Certificate.class);
+        Join<Certificate, Tag> tags = rootEntry.join(JOIN_TABLE_TAGS);
+        for (Tag element : uniqueTags) {
+            CriteriaBuilder.In<String> inTags = criteriaBuilder.in(tags.get(NAME_PARAMETER));
+            inTags.value(element.getName());
+            int count = entityManager.createQuery(criteriaQuery.select(rootEntry)
+                    .where(inTags)).getResultList().size();
+            countsOfUse.put(element, count);
+        }
+        return countsOfUse;
+    }
+
+    private List<Tag> selectMostPopularByCount(Map<Tag, Integer> countsOfUse) {
+        List<Tag> resultListOfTags = new ArrayList<>();
+        int maxCount = 0;
+        for (Integer element : countsOfUse.values()) {
+            if (element > maxCount) {
+                maxCount = element;
+            }
+        }
+        for (Tag key : countsOfUse.keySet()) {
+            if (countsOfUse.get(key) == maxCount) {
+                resultListOfTags.add(key);
+            }
+        }
+        return resultListOfTags;
+    }
+
+    private Map<Tag, BigDecimal> getTagPrice(List<Tag> uniqueTags, CriteriaBuilder criteriaBuilder) {
+        Map<Tag, BigDecimal> tagAllPrices = new HashMap<>();
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> rootEntry = criteriaQuery.from(Certificate.class);
+        Join<Certificate, Tag> tags = rootEntry.join(JOIN_TABLE_TAGS);
+        for (Tag element : uniqueTags) {
+            CriteriaBuilder.In<String> inTags = criteriaBuilder.in(tags.get(NAME_PARAMETER));
+            inTags.value(element.getName());
+            List<Certificate> certificates = entityManager.createQuery(criteriaQuery.select(rootEntry)
+                    .where(inTags)).getResultList();
+            BigDecimal price = new BigDecimal(0);
+            for (Certificate certificate : certificates) {
+                price = price.add(certificate.getPrice());
+            }
+            tagAllPrices.put(element, price);
+        }
+        return tagAllPrices;
+    }
+
+    private Tag selectMostPopularByPrice(Map<Tag, BigDecimal> tagsAndPrices) {
+        Tag mostPopular = null;
+        BigDecimal maxPrice = new BigDecimal(0);
+        for (BigDecimal element : tagsAndPrices.values()) {
+            if (element.compareTo(maxPrice) > 0) {
+                maxPrice = element;
+            }
+        }
+        for (Tag key : tagsAndPrices.keySet()) {
+            if (tagsAndPrices.get(key).compareTo(maxPrice) == 0) {
+                mostPopular = key;
+                break;
+            }
+        }
+        return mostPopular;
     }
 }
