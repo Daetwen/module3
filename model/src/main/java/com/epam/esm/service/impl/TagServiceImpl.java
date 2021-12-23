@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -88,7 +89,7 @@ public class TagServiceImpl implements TagService {
     }
 
     private TagDto checkTag(Tag tag) throws ServiceSearchException {
-        if (tag != null) {
+        if (!Objects.isNull(tag)) {
             return tagConverter.convertTagToTagDto(tag);
         } else {
             throw new ServiceSearchException(

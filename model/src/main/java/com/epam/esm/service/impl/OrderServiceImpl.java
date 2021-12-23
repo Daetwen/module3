@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -106,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderDto checkOrder(Order order)
             throws ServiceSearchException {
-        if (order != null) {
+        if (!Objects.isNull(order)) {
             return orderConverter.convertOrderToOrderDto(order);
         } else {
             throw new ServiceSearchException(

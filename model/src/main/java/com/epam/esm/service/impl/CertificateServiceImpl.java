@@ -22,6 +22,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -125,7 +126,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     private CertificateDto checkCertificate(Certificate certificate)
             throws ServiceSearchException {
-        if (certificate != null) {
+        if (!Objects.isNull(certificate)) {
             CertificateDto certificateDto =
                     certificateConverter.convertCertificateToCertificateDto(certificate);
             appendTagsForOne(certificateDto);

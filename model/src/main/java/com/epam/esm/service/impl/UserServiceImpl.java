@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     private UserDto checkUser(User user)
             throws ServiceSearchException {
-        if (user != null) {
+        if (!Objects.isNull(user)) {
             return userConverter.convertUserToUserDto(user);
         } else {
             throw new ServiceSearchException(
